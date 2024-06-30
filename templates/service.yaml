@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-applicationset-controller
+  labels:
+    app.kubernetes.io/component: applicationset-controller
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.applicationsetController.type }}
+  selector:
+    app.kubernetes.io/name: argocd-applicationset-controller
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.applicationsetController.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-dex-server
+  labels:
+    app.kubernetes.io/component: dex-server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.dexServer.type }}
+  selector:
+    app.kubernetes.io/name: argocd-dex-server
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.dexServer.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-metrics
+  labels:
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metrics.type }}
+  selector:
+    app.kubernetes.io/name: argocd-application-controller
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.metrics.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-notifications-controller-metrics
+  labels:
+    app.kubernetes.io/component: notifications-controller
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.notificationsControllerMetrics.type }}
+  selector:
+    app.kubernetes.io/name: argocd-notifications-controller
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.notificationsControllerMetrics.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-redis
+  labels:
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.redis.type }}
+  selector:
+    app.kubernetes.io/name: argocd-redis
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.redis.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-repo-server
+  labels:
+    app.kubernetes.io/component: repo-server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.repoServer.type }}
+  selector:
+    app.kubernetes.io/name: argocd-repo-server
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.repoServer.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-server
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.server.type }}
+  selector:
+    app.kubernetes.io/name: argocd-server
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.server.ports | toYaml | nindent 2 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "argo.fullname" . }}-server-metrics
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.serverMetrics.type }}
+  selector:
+    app.kubernetes.io/name: argocd-server
+  {{- include "argo.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- .Values.serverMetrics.ports | toYaml | nindent 2 }}

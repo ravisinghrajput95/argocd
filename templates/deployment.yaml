@@ -1,0 +1,1133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-applicationset-controller
+  labels:
+    app.kubernetes.io/component: applicationset-controller
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-applicationset-controller
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-applicationset-controller
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - args: {{- toYaml .Values.applicationsetController.argocdApplicationsetController.args
+          | nindent 8 }}
+        env:
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_GLOBAL_PRESERVED_ANNOTATIONS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.global.preserved.annotations
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_GLOBAL_PRESERVED_LABELS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.global.preserved.labels
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_LEADER_ELECTION
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.leader.election
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: repo.server
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_POLICY
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.policy
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_POLICY_OVERRIDE
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.policy.override
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.debug
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGFORMAT
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.log.format
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.log.level
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_DRY_RUN
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.dryrun
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_GIT_MODULES_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.git.submodule
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_PROGRESSIVE_SYNCS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.progressive.syncs
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_NEW_GIT_FILE_GLOBBING
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.new.git.file.globbing
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_PLAINTEXT
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.repo.server.plaintext
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_STRICT_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.repo.server.strict.tls
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_REPO_SERVER_TIMEOUT_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.repo.server.timeout.seconds
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_CONCURRENT_RECONCILIATIONS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.concurrent.reconciliations.max
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_NAMESPACES
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.namespaces
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_SCM_ROOT_CA_PATH
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.scm.root.ca.path
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ALLOWED_SCM_PROVIDERS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.allowed.scm.providers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_ENABLE_SCM_PROVIDERS
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.enable.scm.providers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.applicationsetController.argocdApplicationsetController.image.repository
+          }}:{{ .Values.applicationsetController.argocdApplicationsetController.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.applicationsetController.argocdApplicationsetController.imagePullPolicy
+          }}
+        name: argocd-applicationset-controller
+        ports:
+        - containerPort: 7000
+          name: webhook
+        - containerPort: 8080
+          name: metrics
+        resources: {}
+        securityContext: {{- toYaml .Values.applicationsetController.argocdApplicationsetController.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /app/config/ssh
+          name: ssh-known-hosts
+        - mountPath: /app/config/tls
+          name: tls-certs
+        - mountPath: /app/config/gpg/source
+          name: gpg-keys
+        - mountPath: /app/config/gpg/keys
+          name: gpg-keyring
+        - mountPath: /tmp
+          name: tmp
+        - mountPath: /app/config/reposerver/tls
+          name: argocd-repo-server-tls
+      serviceAccountName: {{ include "argo.fullname" . }}-applicationset-controller
+      volumes:
+      - configMap:
+          name: {{ include "argo.fullname" . }}-ssh-known-hosts-cm
+        name: ssh-known-hosts
+      - configMap:
+          name: {{ include "argo.fullname" . }}-tls-certs-cm
+        name: tls-certs
+      - configMap:
+          name: {{ include "argo.fullname" . }}-gpg-keys-cm
+        name: gpg-keys
+      - emptyDir: {}
+        name: gpg-keyring
+      - emptyDir: {}
+        name: tmp
+      - name: argocd-repo-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-repo-server-tls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-dex-server
+  labels:
+    app.kubernetes.io/component: dex-server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-dex-server
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-dex-server
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
+              topologyKey: kubernetes.io/hostname
+            weight: 5
+      containers:
+      - command:
+        - /shared/argocd-dex
+        - rundex
+        env:
+        - name: ARGOCD_DEX_SERVER_DISABLE_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: dexserver.disable.tls
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.dexServer.dex.image.repository }}:{{ .Values.dexServer.dex.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.dexServer.dex.imagePullPolicy }}
+        name: dex
+        ports:
+        - containerPort: 5556
+        - containerPort: 5557
+        - containerPort: 5558
+        resources: {}
+        securityContext: {{- toYaml .Values.dexServer.dex.containerSecurityContext | nindent
+          10 }}
+        volumeMounts:
+        - mountPath: /shared
+          name: static-files
+        - mountPath: /tmp
+          name: dexconfig
+        - mountPath: /tls
+          name: argocd-dex-server-tls
+      initContainers:
+      - command:
+        - /bin/cp
+        - -n
+        - /usr/local/bin/argocd
+        - /shared/argocd-dex
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.dexServer.copyutil.image.repository }}:{{ .Values.dexServer.copyutil.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.dexServer.copyutil.imagePullPolicy }}
+        name: copyutil
+        resources: {}
+        securityContext: {{- toYaml .Values.dexServer.copyutil.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /shared
+          name: static-files
+        - mountPath: /tmp
+          name: dexconfig
+      serviceAccountName: {{ include "argo.fullname" . }}-dex-server
+      volumes:
+      - emptyDir: {}
+        name: static-files
+      - emptyDir: {}
+        name: dexconfig
+      - name: argocd-dex-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-dex-server-tls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-notifications-controller
+  labels:
+    app.kubernetes.io/component: notifications-controller
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-notifications-controller
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-notifications-controller
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - args: {{- toYaml .Values.notificationsController.argocdNotificationsController.args
+          | nindent 8 }}
+        env:
+        - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGFORMAT
+          valueFrom:
+            configMapKeyRef:
+              key: notificationscontroller.log.format
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: notificationscontroller.log.level
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATION_NAMESPACES
+          valueFrom:
+            configMapKeyRef:
+              key: application.namespaces
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_NOTIFICATION_CONTROLLER_SELF_SERVICE_NOTIFICATION_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: notificationscontroller.selfservice.enabled
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.notificationsController.argocdNotificationsController.image.repository
+          }}:{{ .Values.notificationsController.argocdNotificationsController.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.notificationsController.argocdNotificationsController.imagePullPolicy
+          }}
+        livenessProbe:
+          tcpSocket:
+            port: 9001
+        name: argocd-notifications-controller
+        resources: {}
+        securityContext: {{- toYaml .Values.notificationsController.argocdNotificationsController.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /app/config/tls
+          name: tls-certs
+        - mountPath: /app/config/reposerver/tls
+          name: argocd-repo-server-tls
+        workingDir: /app
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "argo.fullname" . }}-notifications-controller
+      volumes:
+      - configMap:
+          name: {{ include "argo.fullname" . }}-tls-certs-cm
+        name: tls-certs
+      - name: argocd-repo-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-repo-server-tls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-redis
+  labels:
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-redis
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-redis
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: argocd-redis
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
+              topologyKey: kubernetes.io/hostname
+            weight: 5
+      containers:
+      - args: {{- toYaml .Values.redis.redis.args | nindent 8 }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: auth
+              name: {{ include "argo.fullname" . }}-redis
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.redis.redis.image.repository }}:{{ .Values.redis.redis.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.redis.redis.imagePullPolicy }}
+        name: redis
+        ports:
+        - containerPort: 6379
+        resources: {}
+        securityContext: {{- toYaml .Values.redis.redis.containerSecurityContext | nindent
+          10 }}
+      initContainers:
+      - command:
+        - argocd
+        - admin
+        - redis-initial-password
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.redis.secretInit.image.repository }}:{{ .Values.redis.secretInit.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.redis.secretInit.imagePullPolicy }}
+        name: secret-init
+        resources: {}
+        securityContext: {{- toYaml .Values.redis.secretInit.containerSecurityContext |
+          nindent 10 }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "argo.fullname" . }}-redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-repo-server
+  labels:
+    app.kubernetes.io/component: repo-server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-repo-server
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-repo-server
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: argocd-repo-server
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
+              topologyKey: kubernetes.io/hostname
+            weight: 5
+      automountServiceAccountToken: false
+      containers:
+      - args: {{- toYaml .Values.repoServer.argocdRepoServer.args | nindent 8 }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: auth
+              name: {{ include "argo.fullname" . }}-redis
+        - name: ARGOCD_RECONCILIATION_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: timeout.reconciliation
+              name: {{ include "argo.fullname" . }}-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_LOGFORMAT
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.log.format
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.log.level
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_PARALLELISM_LIMIT
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.parallelism.limit
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_LISTEN_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.listen.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_LISTEN_METRICS_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.metrics.listen.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_DISABLE_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.disable.tls
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_MIN_VERSION
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.tls.minversion
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_MAX_VERSION
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.tls.maxversion
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_CIPHERS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.tls.ciphers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.repo.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDIS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: redis.server
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDIS_COMPRESSION
+          valueFrom:
+            configMapKeyRef:
+              key: redis.compression
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDISDB
+          valueFrom:
+            configMapKeyRef:
+              key: redis.db
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_DEFAULT_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.default.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_OTLP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_OTLP_INSECURE
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.insecure
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_OTLP_HEADERS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.headers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_MAX_COMBINED_DIRECTORY_MANIFESTS_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.max.combined.directory.manifests.size
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_PLUGIN_TAR_EXCLUSIONS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.plugin.tar.exclusions
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_ALLOW_OUT_OF_BOUNDS_SYMLINKS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.allow.oob.symlinks
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_TAR_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.streamed.manifest.max.tar.size
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_EXTRACTED_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.streamed.manifest.max.extracted.size
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.helm.manifest.max.extracted.size
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_DISABLE_HELM_MANIFEST_MAX_EXTRACTED_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.disable.helm.manifest.max.extracted.size
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REVISION_CACHE_LOCK_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.revision.cache.lock.timeout
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_GIT_MODULES_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.enable.git.submodule
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_GIT_LS_REMOTE_PARALLELISM_LIMIT
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.git.lsremote.parallelism.limit
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_GIT_REQUEST_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.git.request.timeout
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: HELM_CACHE_HOME
+          value: {{ quote .Values.repoServer.argocdRepoServer.env.helmCacheHome }}
+        - name: HELM_CONFIG_HOME
+          value: {{ quote .Values.repoServer.argocdRepoServer.env.helmConfigHome }}
+        - name: HELM_DATA_HOME
+          value: {{ quote .Values.repoServer.argocdRepoServer.env.helmDataHome }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.repoServer.argocdRepoServer.image.repository }}:{{ .Values.repoServer.argocdRepoServer.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.repoServer.argocdRepoServer.imagePullPolicy }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz?full=true
+            port: 8084
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: argocd-repo-server
+        ports:
+        - containerPort: 8081
+        - containerPort: 8084
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8084
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources: {}
+        securityContext: {{- toYaml .Values.repoServer.argocdRepoServer.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /app/config/ssh
+          name: ssh-known-hosts
+        - mountPath: /app/config/tls
+          name: tls-certs
+        - mountPath: /app/config/gpg/source
+          name: gpg-keys
+        - mountPath: /app/config/gpg/keys
+          name: gpg-keyring
+        - mountPath: /app/config/reposerver/tls
+          name: argocd-repo-server-tls
+        - mountPath: /tmp
+          name: tmp
+        - mountPath: /helm-working-dir
+          name: helm-working-dir
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+      initContainers:
+      - command:
+        - /bin/cp
+        - -n
+        - /usr/local/bin/argocd
+        - /var/run/argocd/argocd-cmp-server
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.repoServer.copyutil.image.repository }}:{{ .Values.repoServer.copyutil.image.tag
+          | default .Chart.AppVersion }}
+        name: copyutil
+        resources: {}
+        securityContext: {{- toYaml .Values.repoServer.copyutil.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+      serviceAccountName: {{ include "argo.fullname" . }}-repo-server
+      volumes:
+      - configMap:
+          name: {{ include "argo.fullname" . }}-ssh-known-hosts-cm
+        name: ssh-known-hosts
+      - configMap:
+          name: {{ include "argo.fullname" . }}-tls-certs-cm
+        name: tls-certs
+      - configMap:
+          name: {{ include "argo.fullname" . }}-gpg-keys-cm
+        name: gpg-keys
+      - emptyDir: {}
+        name: gpg-keyring
+      - emptyDir: {}
+        name: tmp
+      - emptyDir: {}
+        name: helm-working-dir
+      - name: argocd-repo-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-repo-server-tls
+      - emptyDir: {}
+        name: var-files
+      - emptyDir: {}
+        name: plugins
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "argo.fullname" . }}-server
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: argocd
+  {{- include "argo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+    {{- include "argo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-server
+      {{- include "argo.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: argocd-server
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: argocd
+              topologyKey: kubernetes.io/hostname
+            weight: 5
+      containers:
+      - args: {{- toYaml .Values.server.argocdServer.args | nindent 8 }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: auth
+              name: {{ include "argo.fullname" . }}-redis
+        - name: ARGOCD_SERVER_INSECURE
+          valueFrom:
+            configMapKeyRef:
+              key: server.insecure
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_BASEHREF
+          valueFrom:
+            configMapKeyRef:
+              key: server.basehref
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_ROOTPATH
+          valueFrom:
+            configMapKeyRef:
+              key: server.rootpath
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_LOGFORMAT
+          valueFrom:
+            configMapKeyRef:
+              key: server.log.format
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: server.log.level
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_REPO_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: repo.server
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DEX_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: server.dex.server
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DISABLE_AUTH
+          valueFrom:
+            configMapKeyRef:
+              key: server.disable.auth
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_ENABLE_GZIP
+          valueFrom:
+            configMapKeyRef:
+              key: server.enable.gzip
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_REPO_SERVER_TIMEOUT_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              key: server.repo.server.timeout.seconds
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_X_FRAME_OPTIONS
+          valueFrom:
+            configMapKeyRef:
+              key: server.x.frame.options
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_CONTENT_SECURITY_POLICY
+          valueFrom:
+            configMapKeyRef:
+              key: server.content.security.policy
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_REPO_SERVER_PLAINTEXT
+          valueFrom:
+            configMapKeyRef:
+              key: server.repo.server.plaintext
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_REPO_SERVER_STRICT_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: server.repo.server.strict.tls
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DEX_SERVER_PLAINTEXT
+          valueFrom:
+            configMapKeyRef:
+              key: server.dex.server.plaintext
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DEX_SERVER_STRICT_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: server.dex.server.strict.tls
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_MIN_VERSION
+          valueFrom:
+            configMapKeyRef:
+              key: server.tls.minversion
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_MAX_VERSION
+          valueFrom:
+            configMapKeyRef:
+              key: server.tls.maxversion
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_TLS_CIPHERS
+          valueFrom:
+            configMapKeyRef:
+              key: server.tls.ciphers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_CONNECTION_STATUS_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: server.connection.status.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_OIDC_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: server.oidc.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_LOGIN_ATTEMPTS_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: server.login.attempts.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_STATIC_ASSETS
+          valueFrom:
+            configMapKeyRef:
+              key: server.staticassets
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APP_STATE_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: server.app.state.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDIS_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: redis.server
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDIS_COMPRESSION
+          valueFrom:
+            configMapKeyRef:
+              key: redis.compression
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: REDISDB
+          valueFrom:
+            configMapKeyRef:
+              key: redis.db
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_DEFAULT_CACHE_EXPIRATION
+          valueFrom:
+            configMapKeyRef:
+              key: server.default.cache.expiration
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_MAX_COOKIE_NUMBER
+          valueFrom:
+            configMapKeyRef:
+              key: server.http.cookie.maxnumber
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_LISTEN_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: server.listen.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_METRICS_LISTEN_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: server.metrics.listen.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_OTLP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.address
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_OTLP_INSECURE
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.insecure
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_OTLP_HEADERS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.headers
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATION_NAMESPACES
+          valueFrom:
+            configMapKeyRef:
+              key: application.namespaces
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_ENABLE_PROXY_EXTENSION
+          valueFrom:
+            configMapKeyRef:
+              key: server.enable.proxy.extension
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_K8SCLIENT_RETRY_MAX
+          valueFrom:
+            configMapKeyRef:
+              key: server.k8sclient.retry.max
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_K8SCLIENT_RETRY_BASE_BACKOFF
+          valueFrom:
+            configMapKeyRef:
+              key: server.k8sclient.retry.base.backoff
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: ARGOCD_API_CONTENT_TYPES
+          valueFrom:
+            configMapKeyRef:
+              key: server.api.content.types
+              name: {{ include "argo.fullname" . }}-cmd-params-cm
+              optional: true
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.server.argocdServer.image.repository }}:{{ .Values.server.argocdServer.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.server.argocdServer.imagePullPolicy }}
+        livenessProbe:
+          httpGet:
+            path: /healthz?full=true
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: argocd-server
+        ports:
+        - containerPort: 8080
+        - containerPort: 8083
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 30
+        resources: {}
+        securityContext: {{- toYaml .Values.server.argocdServer.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /app/config/ssh
+          name: ssh-known-hosts
+        - mountPath: /app/config/tls
+          name: tls-certs
+        - mountPath: /app/config/server/tls
+          name: argocd-repo-server-tls
+        - mountPath: /app/config/dex/tls
+          name: argocd-dex-server-tls
+        - mountPath: /home/argocd
+          name: plugins-home
+        - mountPath: /tmp
+          name: tmp
+      serviceAccountName: {{ include "argo.fullname" . }}-server
+      volumes:
+      - emptyDir: {}
+        name: plugins-home
+      - emptyDir: {}
+        name: tmp
+      - configMap:
+          name: {{ include "argo.fullname" . }}-ssh-known-hosts-cm
+        name: ssh-known-hosts
+      - configMap:
+          name: {{ include "argo.fullname" . }}-tls-certs-cm
+        name: tls-certs
+      - name: argocd-repo-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-repo-server-tls
+      - name: argocd-dex-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-dex-server-tls
